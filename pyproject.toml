@@ -1,20 +1,23 @@
 [build-system]
-requires = [
-	"flit_core >=3.2,<4",
-	"python_version >='3.7'"
-	]
+requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["test"]
 
 [project]
 name = "hmm"
-authors = [{name = "Shu Zhang", email = "shu.zhang2@ucsf.edu"}]
+authors = [{name = "Isobel Beasley", email = "isobel.beasley@ucsf.edu"}]
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
+requires-python = ">= 3.7"
 dependencies = [
-    "pytest", "numpy" 
+    "pytest", 
+    "numpy" 
 ]
 
 [project.urls]
-Home = "https://github.com/BMI203-2024/HW6-HMM"
+Home = "https://github.com/IJbeasley/HW6-HMM"
