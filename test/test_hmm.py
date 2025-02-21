@@ -32,6 +32,9 @@ def test_mini_weather():
                                 
     # Ensure that the output of your Forward algorithm is correct.  
     forward_prob = mini_hmm.forward(mini_input['observation_state_sequence'])
+    assert forward_prob > 0, "The output of the forward algorithm for the mini dataset is not correct"
+    # print(forward_prob)
+    # raise ValueError("hfhgh")
     # assert forward_prob
     
     
@@ -65,7 +68,10 @@ def test_full_weather():
                                  transition_p = full_hmm['transition_p'],
                                  emission_p = full_hmm['emission_p']
                                 )
-                                
+    
+    # Ensure that the output of your Forward algorithm is correct.  
+    forward_prob = full_hmm.forward(full_input['observation_state_sequence'])   
+    assert np.all(forward_prob > 0), "The output of the forward algorithm for the full datasets is not correct"
                                 
     # Ensure that the output of your Viterbi algorithm is correct                            
     viterbi = full_hmm.viterbi(full_input['observation_state_sequence'])
@@ -73,11 +79,56 @@ def test_full_weather():
     assert len(viterbi) == len(full_input['best_hidden_state_sequence']),  "The calculated viterbi best hidden state sequence is incorrect for full weather dataset"
     assert np.all(viterbi == full_input['best_hidden_state_sequence']), "The calculated viterbi best hidden state sequence is incorrect for full weather dataset"
 
+
+
+# Unit test to check that the HiddenMarkovModel fails correctly when negative prior probs are provided
+def test_negative_prior_p():
+  
+    mini_hmm=np.load('./data/mini_weather_hmm.npz')
     
-    pass
+    try:
+        mini_hmm = HiddenMarkovModel(
+                                     observation_states = mini_hmm['observation_states'],
+                                     hidden_states = mini_hmm['hidden_states'],
+                                     prior_p = -1 * mini_hmm['prior_p'], #multiply by negative -1 to make all prior probs negative
+                                     transition_p = mini_hmm['transition_p'],
+                                     emission_p = mini_hmm['emission_p']
+                                )
+       
+        assert False, "HiddenMarkovModel should have failed on negative prior probabilities"
+       
+    except ValueError as e:
+       print(str(e))
+       assert str(e) == "Prior probabilities cannot be negative", "Negative prior probabilities should have raised a different ValueError in vertbi function"
+   
+   
 
-
-
+# Unit test to check that the viterbi alg fails correctly when invalid states in decode_observation_states are provided
+def test_invalid_decode_obs_seq():
+  
+    mini_hmm=np.load('./data/mini_weather_hmm.npz')
+    
+    mini_hmm = HiddenMarkovModel(
+                                 observation_states = mini_hmm['observation_states'],
+                                 hidden_states = mini_hmm['hidden_states'],
+                                 prior_p = mini_hmm['prior_p'],
+                                 transition_p = mini_hmm['transition_p'],
+                                 emission_p = mini_hmm['emission_p']
+                                )
+                                
+    mini_invalid_input = ['dog', 'wolf', 'dog', 'cat', 'wolf']
+    
+    try:
+       
+       mini_hmm.viterbi(mini_invalid_input)
+       assert False, "Viterbi algorithm should have failed on invalid decode_observation_states"
+       
+    except ValueError as e:
+       assert str(e) == "Invalid observation state: dog", "Invalid decode_observation_states should have raised a different ValueError in vertbi function"
+   
+   
+  
+  
 
 
 
