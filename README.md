@@ -1,6 +1,31 @@
+
+
 # HW6-HMM
 
-In this assignment, you'll implement the Forward and Viterbi Algorithms (dynamic programming). 
+![BuildStatus](https://github.com/IJbeasley/HW6-HMM/workflows/Assignment%20Tests/badge.svg) 
+
+## Description of methods: 
+
+1. Initialize the Hidden Markov Model with `HiddenMarkovModel`
+  - Requires Hidden Markov Model parameters as input:
+    - All possible observation states (`observation_states`) and hidden states (`hidden_states`)
+    - Prior probabilities (`prior_p`)
+    - Transition probabilities (`transition_p`)
+    - Emission probabilities (`emission_p`)
+    
+2. Implement the Forward algorithm to calculate the probability (likelihood) of observing a given sequence of states with `forward`:
+  - Method to apply to a HiddenMarkovModel object
+  - Takes a sequence of observation states as input (`input_observation_states`)
+  - Returns the total probability of observing the sequence
+  
+3.  Implement the Viterbi algorithm to find the most likely sequence of hidden states given a sequence of observations with `vertbi`:
+  - Method to apply to a HiddenMarkovModel object
+  - Takes a sequence of observation states as input (`decode_observation_states`)
+  - Returns the most likely sequence of hidden states 
+  
+
+
+
 
 
 # Assignment
@@ -49,17 +74,17 @@ Finally, please update your README with a brief description of your methods.
 ## Task List
 
 [TODO] Complete the HiddenMarkovModel Class methods  <br>
-  [ ] complete the `forward` function in the HiddenMarkovModelClass <br>
-  [ ] complete the `viterbi` function in the HiddenMarkovModelClass <br>
+  [X] complete the `forward` function in the HiddenMarkovModelClass <br>
+  [X] complete the `viterbi` function in the HiddenMarkovModelClass <br>
 
 [TODO] Unit Testing  <br>
-  [ ] Ensure functionality on mini and full weather dataset <br>
-  [ ] Account for edge cases 
+  [X] Ensure functionality on mini and full weather dataset <br>
+  [X] Account for edge cases 
 
 [TODO] Packaging <br>
   [ ] Update README with description of your methods <br>
-  [ ] pip installable module (optional)<br>
-  [ ] github actions (install + pytest) (optional)
+  [X] pip installable module (optional)<br>
+  [X] github actions (install + pytest) (optional)
 
 
 ## Completing the Assignment 
