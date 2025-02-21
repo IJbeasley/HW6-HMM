@@ -33,9 +33,7 @@ def test_mini_weather():
     # Ensure that the output of your Forward algorithm is correct.  
     forward_prob = mini_hmm.forward(mini_input['observation_state_sequence'])
     assert forward_prob > 0 and forward_prob < 1, "The output of the forward algorithm for the mini dataset is not correct"
-    # print(forward_prob)
-    # raise ValueError("hfhgh")
-    # assert forward_prob
+    assert np.allclose(forward_prob, 3.5e-2, atol = 1e-4),  "The output of the forward algorithm for the mini dataset is not correct"
     
     
     # Ensure that the output of your Viterbi algorithm is correct
@@ -72,7 +70,8 @@ def test_full_weather():
     # Ensure that the output of your Forward algorithm is correct.  
     forward_prob = full_hmm.forward(full_input['observation_state_sequence'])   
     assert forward_prob > 0 and forward_prob < 1, "The output of the forward algorithm for the full datasets is not correct"
-                                
+    assert np.allclose(forward_prob, 1.686e-11, atol = 1e-14),  "The output of the forward algorithm for the mini dataset is not correct"
+                                  
     # Ensure that the output of your Viterbi algorithm is correct                            
     viterbi = full_hmm.viterbi(full_input['observation_state_sequence'])
     
@@ -98,7 +97,6 @@ def test_negative_prior_p():
         assert False, "HiddenMarkovModel should have failed on negative prior probabilities"
        
     except ValueError as e:
-       print(str(e))
        assert str(e) == "Prior probabilities cannot be negative", "Negative prior probabilities should have raised a different ValueError in vertbi function"
    
    
