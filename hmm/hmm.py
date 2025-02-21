@@ -23,8 +23,62 @@ class HiddenMarkovModel:
         self.hidden_states = hidden_states
         self.hidden_states_dict = {index: state for index, state in enumerate(list(self.hidden_states))}
         
-        self.prior_p= prior_p
+        # Check probability input 
+        # prior_p sums to 1
+        if not np.isclose(np.sum(prior_p),1):
+           raise ValueError("Prior probabilities need to sum to 1")
+         
+        # prior_p should be 1d
+        if len(prior_p.shape) != 1:
+           raise ValueError("Prior probability array should be 1D")
+        
+        # no negative probilities in prior_p
+        if np.any(prior_p < 0):
+           raise ValueError("Prior probabilities cannot be negative")
+        
+        # number of prior probabilities is equal to the number of hidden states
+        if len(prior_p) != len(hidden_states):
+           raise ValueError("The number of prior probabilities should correspond to the number of hidden states")
+         
+        self.prior_p = prior_p
+        
+        # Each row of transition_p sums to 1
+        if np.any(np.sum(transition_p, axis = 1) != 1):
+           raise ValueError("Every row of transition probability matrix must sum to 1")
+        
+        
+        # no negative probilities in transition_p
+        if np.any(transition_p < 0):
+           raise ValueError("Transition probabilities cannot be negative")
+         
+        # transition_p should be square
+        if transition_p.shape[0] != transition_p.shape[1]:
+           raise ValueError("Transition probability matrix should be square")
+        
+        # transition_p should be 2d
+        if len(transition_p.shape) != 2:
+           raise ValueError("Transition probability matrix should be 2D")
+         
+        # transition_p should have the same number of states as hidden states
+        if transition_p.shape[0] != len(hidden_states):
+           raise ValueError("The number of states in the transition probability matrix should be equal to the number of hidden states")
+        
         self.transition_p = transition_p
+        
+        # Each row of emission_p sums to 1
+        if np.any(np.sum(emission_p, axis = 1) != 1):
+           raise ValueError("Every row of emission probability matrix must sum to 1")
+        
+        # emission probabilities should be non-negative
+        if np.any(emission_p < 0):
+           raise ValueError("Emission probabilities cannot be negative") 
+         
+        if len(emission_p) != len(hidden_states):
+           raise ValueError("The number of emission probabilities should correspond to number of hidden states")
+         
+        if len(emission_p.shape) != 2:
+           raise ValueError("Emission probabilities array should be 1D")
+         
         self.emission_p = emission_p
 
 
@@ -39,8 +93,19 @@ class HiddenMarkovModel:
 
         Returns:
             forward_probability (float): forward probability (likelihood) for the input observed sequence  
-        """        
+        """   
         
+        # Step 0 - check inputs
+        
+        # Fail if input state sequence is empty 
+        if len(input_observation_states) == 0:
+           raise ValueError("Input state sequence shouldn't be empty")
+        
+        # Fail if input state sequence includes states not in our observed states dictionary
+        for state in input_observation_states:
+            if state not in self.observation_states_dict:
+                raise ValueError(f"Invalid observation state: {state}")
+         
         # Step 1. Initialize variables 
         # alpha (Forward Probability Table)
         alpha = np.zeros((len(input_observation_states), len(self.hidden_states)))
@@ -81,6 +146,17 @@ class HiddenMarkovModel:
         Returns:
             best_hidden_state_sequence(list): most likely list of hidden states that generated the sequence observed states
         """        
+        # Step 0 - check inputs
+        
+        # Fail if decode state sequence is empty 
+        if len(decode_observation_states) == 0:
+           raise ValueError("Decode state sequence shouldn't be empty")
+        
+        # Fail if decode state sequence includes states not in our observed states dictionary
+        for state in decode_observation_states:
+            if state not in self.observation_states_dict:
+                raise ValueError(f"Invalid observation state: {state}")
+        
         
         # Step 1. Initialize variables
         
@@ -89,8 +165,6 @@ class HiddenMarkovModel:
         #store best path for traceback
         best_path = np.zeros(len(decode_observation_states))   
         
-        # Initialize path (i.e., np.arrays) to store the hidden sequence states returning the maximum probability
-        #path = np.zeros((len(decode_observation_states), len(hidden_s)))
         
         
         # Step 2. Calculate Probabilities
@@ -99,22 +173,22 @@ class HiddenMarkovModel:
         first_obs_id = self.observation_states_dict[decode_observation_states[0]]
         viterbi_table[0, :] = self.prior_p * self.emission_p[:, first_obs_id]
        
-        # Then for every subsequent observation state in the sequence, 
+        # Then for every subsequent observation state in the sequence (i.e. time steps)
         # calculate the probability of every hidden state sequence, 
         # and select the hidden state sequence with the highest probability 
-        for obs_state in range(1, len(decode_observation_states)):
+        for t in range(1, len(decode_observation_states)):
            
-            obs_id = self.observation_states_dict[decode_observation_states[obs_state]]
+            obs_idx = self.observation_states_dict[decode_observation_states[t]]
            
-            for hidden_state in range(0, len(self.hidden_states)):
+            for hs in range(0, len(self.hidden_states)):
                
                 trans_p = np.array([
-                                    viterbi_table[obs_state - 1, prev_state] * self.transition_p[prev_state, obs_id] 
+                                    viterbi_table[t - 1, prev_state] * self.transition_p[prev_state, hs] 
                                     for prev_state in range(len(self.hidden_states))
                                     ])
 
                 best_trans_p = np.max(trans_p)
-                viterbi_table[obs_state, hidden_state] = best_trans_p * self.emission_p[hidden_state, obs_id]
+                viterbi_table[t, hs] = best_trans_p * self.emission_p[hs, obs_idx]
 
             
         # Step 3. Traceback 
