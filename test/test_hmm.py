@@ -21,6 +21,20 @@ def test_mini_weather():
 
     mini_hmm=np.load('./data/mini_weather_hmm.npz')
     mini_input=np.load('./data/mini_weather_sequences.npz')
+    
+    mini_hmm_res = HiddenMarkovModel(
+                                 observation_states = mini_hmm['observation_states'],
+                                 hidden_states = mini_hmm['hidden_states'],
+                                 prior_p = mini_hmm['prior_p'],
+                                 transition_p = mini_hmm['transition_p'],
+                                 emission_p = mini_hmm['emission_p']
+                                )
+                                
+    mini_hmm_res.viterbi(
+                         decode_observation_states = mini_input['observation_state_sequence']
+                         )
+    
+    #raise ValueError("OK")
 
 
 
@@ -44,7 +58,21 @@ def test_full_weather():
     Assert that the state sequence returned is in the right order, has the right number of states, etc. 
 
     """
-
+    
+    full_hmm=np.load('./data/full_weather_hmm.npz')
+    full_input=np.load('./data/full_weather_sequences.npz')
+    
+    full_hmm_res = HiddenMarkovModel(
+                                 observation_states = full_hmm['observation_states'],
+                                 hidden_states = full_hmm['hidden_states'],
+                                 prior_p = full_hmm['prior_p'],
+                                 transition_p = full_hmm['transition_p'],
+                                 emission_p = full_hmm['emission_p']
+                                )
+                                
+    full_hmm_res.viterbi(
+                         decode_observation_states = full_input['observation_state_sequence']
+                         )
     pass
 
 
