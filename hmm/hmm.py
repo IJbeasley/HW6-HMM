@@ -67,24 +67,41 @@ class HiddenMarkovModel:
         # Step 1. Initialize variables
         
         #store probabilities of hidden state at each step 
-        viterbi_table = np.zeros(
-                                 (len(self.hidden_states), len(decode_observation_states))
-                                 )
+        viterbi_table = np.zeros((len(decode_observation_states), len(self.hidden_states)))
         #store best path for traceback
-        best_path = np.zeros(
-                             (len(self.hidden_states), len(decode_observation_states))
-                            )  
+        best_path = np.zeros(len(decode_observation_states))   
         
-        # Initialize first column 
-        first_observation = self.observation_states_dict[decode_observation_states[0]]
-        viterbi_table[:, 0] = self.prior_p * self.emission_p[:, first_observation]
-        best_path[:, 0] = np.arange(len(self.hidden_states)) 
+        # Initialize path (i.e., np.arrays) to store the hidden sequence states returning the maximum probability
+        #path = np.zeros((len(decode_observation_states), len(hidden_s)))
         
-       # Step 2. Calculate Probabilities
+        
+        # Step 2. Calculate Probabilities
+       
+        # Calculate probabilities of each hidden state for the first observed state in the sequence
+        first_obs_id = self.observation_states_dict[decode_observation_states[0]]
+        viterbi_table[0, :] = self.prior_p * self.emission_p[:, first_obs_id]
+       
+        # Then for every subsequent observation state in the sequence, 
+        # calculate the probability of every hidden state sequence, 
+        # and select the hidden state sequence with the highest probability 
+        for obs_state in range(1, len(decode_observation_states)):
+           
+            obs_id = self.observation_states_dict[decode_observation_states[obs_state]]
+           
+            for hidden_state in range(0, len(self.hidden_states)):
+               
+                trans_p = np.array([
+                                    viterbi_table[obs_state - 1, prev_state] * self.transition_p[prev_state, obs_id] 
+                                    for prev_state in range(len(self.hidden_states))
+                                    ])
+
+                best_trans_p = np.max(trans_p)
+                viterbi_table[obs_state, hidden_state] = best_trans_p * self.emission_p[hidden_state, obs_id]
 
             
         # Step 3. Traceback 
 
 
         # Step 4. Return best hidden state sequence 
+        #return best_hidden_state_path
         
