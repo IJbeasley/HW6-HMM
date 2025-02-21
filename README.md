@@ -82,7 +82,7 @@ Finally, please update your README with a brief description of your methods.
   [X] Account for edge cases 
 
 [TODO] Packaging <br>
-  [ ] Update README with description of your methods <br>
+  [X] Update README with description of your methods <br>
   [X] pip installable module (optional)<br>
   [X] github actions (install + pytest) (optional)
 
