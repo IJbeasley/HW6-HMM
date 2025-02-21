@@ -185,10 +185,8 @@ class HiddenMarkovModel:
             obs_idx = self.observation_states_dict[decode_observation_states[t]]
            
             for curr_state in range(0, len(self.hidden_states)):
-                # # Compute transition probabilities from all previous states
-                # trans_p = viterbi_table[t - 1, :] * self.transition_p[:, hs]
                 
-                            # Calculate probabilities for all possible previous states
+                # Calculate probabilities for all possible previous states
                 probs = (viterbi_table[t-1, :] * 
                          self.transition_p[:, curr_state] * 
                          self.emission_p[curr_state, obs_idx])
@@ -198,21 +196,6 @@ class HiddenMarkovModel:
                 # best previous state
                 backpointer[t, curr_state] = np.argmax(probs)
                 
-                # # Select the most probable previous state
-                # best_prev_state = np.argmax(trans_p)
-                # 
-                # # Store best probability and path
-                # viterbi_table[t, hs] = trans_p[best_prev_state] * self.emission_p[hs, obs_idx]
-                # backpointer[t, hs] = best_prev_state                
-               
-                # trans_p = np.array([
-                #                     viterbi_table[t - 1, prev_state] * self.transition_p[prev_state, hs] 
-                #                     for prev_state in range(len(self.hidden_states))
-                #                     ])
-                # 
-                # best_trans_p = np.max(trans_p)
-                # viterbi_table[t, hs] = best_trans_p * self.emission_p[hs, obs_idx]
-
             
         # Step 3. Traceback 
         
