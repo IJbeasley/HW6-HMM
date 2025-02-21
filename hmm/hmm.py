@@ -24,6 +24,11 @@ class HiddenMarkovModel:
         self.hidden_states_dict = {index: state for index, state in enumerate(list(self.hidden_states))}
         
         # Check probability input 
+        # no negative probilities in prior_p
+        if np.any(prior_p < 0):
+           raise ValueError("Prior probabilities cannot be negative")
+        
+        
         # prior_p sums to 1
         if not np.isclose(np.sum(prior_p),1):
            raise ValueError("Prior probabilities need to sum to 1")
@@ -32,9 +37,7 @@ class HiddenMarkovModel:
         if len(prior_p.shape) != 1:
            raise ValueError("Prior probability array should be 1D")
         
-        # no negative probilities in prior_p
-        if np.any(prior_p < 0):
-           raise ValueError("Prior probabilities cannot be negative")
+
         
         # number of prior probabilities is equal to the number of hidden states
         if len(prior_p) != len(hidden_states):
