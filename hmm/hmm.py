@@ -67,16 +67,19 @@ class HiddenMarkovModel:
         # Step 1. Initialize variables
         
         #store probabilities of hidden state at each step 
-        viterbi_table = np.zeros((len(decode_observation_states), len(self.hidden_states)))
+        viterbi_table = np.zeros(
+                                 (len(self.hidden_states), len(decode_observation_states))
+                                 )
         #store best path for traceback
-        best_path = np.zeros(len(decode_observation_states), len(self.hidden_states))  
+        best_path = np.zeros(
+                             (len(self.hidden_states), len(decode_observation_states))
+                            )  
         
         # Initialize first column 
         first_observation = self.observation_states_dict[decode_observation_states[0]]
-        viterbi_table[:, 0] = self.prior_p * self.emission_probs[:, first_observation]
+        viterbi_table[:, 0] = self.prior_p * self.emission_p[:, first_observation]
         best_path[:, 0] = np.arange(len(self.hidden_states)) 
         
-       
        # Step 2. Calculate Probabilities
 
             
