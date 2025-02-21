@@ -22,7 +22,7 @@ def test_mini_weather():
     mini_hmm=np.load('./data/mini_weather_hmm.npz')
     mini_input=np.load('./data/mini_weather_sequences.npz')
     
-    mini_hmm_res = HiddenMarkovModel(
+    mini_hmm = HiddenMarkovModel(
                                  observation_states = mini_hmm['observation_states'],
                                  hidden_states = mini_hmm['hidden_states'],
                                  prior_p = mini_hmm['prior_p'],
@@ -30,20 +30,16 @@ def test_mini_weather():
                                  emission_p = mini_hmm['emission_p']
                                 )
                                 
-    mini_hmm_res.viterbi(
-                         decode_observation_states = mini_input['observation_state_sequence']
-                         )
+    # Ensure that the output of your Forward algorithm is correct.  
+    forward_prob = mini_hmm.forward(mini_input['observation_state_sequence'])
+    # assert forward_prob
     
-    #raise ValueError("OK")
-
-
-
-
-
-
     
-   
-    pass
+    # Ensure that the output of your Viterbi algorithm is correct
+    viterbi = mini_hmm.viterbi(mini_input['observation_state_sequence'])
+    assert len(viterbi) == len(mini_input['best_hidden_state_sequence']),  "The calculated viterbi best hidden state sequence is incorrect for mini weather dataset"
+    assert np.all(viterbi == mini_input['best_hidden_state_sequence']), "The calculated viterbi best hidden state sequence is incorrect for mini weather dataset"
+
 
 
 
@@ -62,7 +58,7 @@ def test_full_weather():
     full_hmm=np.load('./data/full_weather_hmm.npz')
     full_input=np.load('./data/full_weather_sequences.npz')
     
-    full_hmm_res = HiddenMarkovModel(
+    full_hmm = HiddenMarkovModel(
                                  observation_states = full_hmm['observation_states'],
                                  hidden_states = full_hmm['hidden_states'],
                                  prior_p = full_hmm['prior_p'],
@@ -70,9 +66,14 @@ def test_full_weather():
                                  emission_p = full_hmm['emission_p']
                                 )
                                 
-    full_hmm_res.viterbi(
-                         decode_observation_states = full_input['observation_state_sequence']
-                         )
+                                
+    # Ensure that the output of your Viterbi algorithm is correct                            
+    viterbi = full_hmm.viterbi(full_input['observation_state_sequence'])
+    
+    assert len(viterbi) == len(full_input['best_hidden_state_sequence']),  "The calculated viterbi best hidden state sequence is incorrect for full weather dataset"
+    assert np.all(viterbi == full_input['best_hidden_state_sequence']), "The calculated viterbi best hidden state sequence is incorrect for full weather dataset"
+
+    
     pass
 
 
